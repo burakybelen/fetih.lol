@@ -1,0 +1,3 @@
+[build]
+  publish = "Fetih.lol"
+  functions = "netlify/functions"
