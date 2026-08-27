@@ -1,6 +1,3 @@
-
-
-```javascript
 // Biri teklif verdiğinde çağrılır. Fiyatı TARAYICIDAN DEĞİL burada, sunucuda hesaplar
 // (biri konsoldan sahte düşük fiyat gönderemesin diye). Supabase'ten güncel fiyatı okur,
 // yeni teklif fiyatını hesaplar, Lemon Squeezy'de o fiyata özel bir ödeme sayfası oluşturur.
@@ -34,6 +31,7 @@ exports.handler = async function (event) {
   }
 
   try {
+    // 1) Supabase'ten ülkenin güncel fiyatını oku (yoksa varsayılan taban fiyat client'tan gelir)
     const claimRes = await fetch(
       `${SUPABASE_URL}/rest/v1/claims?country_id=eq.${encodeURIComponent(country_id)}&select=price`,
       { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
@@ -44,6 +42,7 @@ exports.handler = async function (event) {
     const newPrice = Math.round(currentPrice * (1.2 + Math.random() * 0.3));
     const priceInCents = newPrice * 100;
 
+    // 2) Lemon Squeezy'de bu fiyata özel bir checkout oluştur
     const lsRes = await fetch("https://api.lemonsqueezy.com/v1/checkouts", {
       method: "POST",
       headers: {
@@ -83,6 +82,3 @@ exports.handler = async function (event) {
     return { statusCode: 500, body: JSON.stringify({ error: String(err) }) };
   }
 };
-```
-
-**Commit changes**'e bas, birkaç dakika bekle, tekrar dene.
