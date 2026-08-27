@@ -56,7 +56,7 @@ exports.handler = async function (event) {
           attributes: {
             custom_price: priceInCents,
             checkout_data: {
-              custom: { country_id, owner_name, social: social || "" }
+              custom: { country_id, owner_name, social: social ? String(social) : "" }
             },
             product_options: {
               name: `Fetih: ${country_id.toUpperCase()}`,
