@@ -1,4 +1,4 @@
-Boss, GitHub editörüne şunun tamamını (baştan sona, hepsini) yapıştır — eskisinin üzerine tamamen yazsın:
+
 
 ```javascript
 // Biri teklif verdiğinde çağrılır. Fiyatı TARAYICIDAN DEĞİL burada, sunucuda hesaplar
