@@ -658,8 +658,8 @@
       <span data-tr>TEKLİF VER →</span>
       <span data-en>PLACE BID →</span>
     </button>
-    <div class="test-note" data-tr>Test modu: gerçek ödeme henüz bağlı değil, kartına ücret yansımaz.</div>
-    <div class="test-note" data-en>Test mode: real payment isn't connected yet, your card won't be charged.</div>
+    <div class="test-note" data-tr>Devam edince gerçek bir ödeme sayfasına yönlendirilirsin — kartın orada tahsil edilir.</div>
+    <div class="test-note" data-en>You'll be redirected to a real checkout page — your card is charged there.</div>
   </div>
 </div>
 
@@ -879,26 +879,44 @@ function closeModal(){ document.getElementById('overlay').classList.remove('show
 
 async function placeBid(){
   if(!activeCountry) return;
-  if(!sb){ closeModal(); showToast(lang==='tr' ? 'Bağlantı yok, sayfayı yenile' : 'No connection, refresh the page'); return; }
   const nameInput = document.getElementById('bidderName');
   const socialInput = document.getElementById('bidderSocial');
   let name = nameInput.value.trim() || myName || (lang==='tr' ? 'İsimsizFatih' : 'AnonConqueror');
   let social = socialInput.value.trim();
   if(social && !social.startsWith('@')) social = '@'+social;
 
-  const newPrice = Math.round(activeCountry.price * (1.2 + Math.random()*0.3));
-  const payload = { country_id: activeCountry.id, owner_name: name, social: social || null, price: newPrice };
-
   myName = name;
   localStorage.setItem('fetih_name', name);
-  closeModal();
   nameInput.value=''; socialInput.value='';
 
-  const { error: e1 } = await sb.from('claims').upsert(payload);
-  if(e1){ console.error(e1); showToast(lang==='tr' ? 'Teklif gönderilemedi, tekrar dene' : 'Bid failed, try again'); return; }
-  const { error: e2 } = await sb.from('bids').insert(payload);
-  if(e2) console.error(e2);
-  // UI updates for everyone (including you) arrive via the realtime subscription above
+  const btn = document.querySelector('.btn-bid');
+  if(btn) btn.disabled = true;
+  showToast(lang==='tr' ? 'Ödeme sayfası hazırlanıyor…' : 'Preparing checkout…');
+
+  try {
+    const res = await fetch('/.netlify/functions/create-checkout', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        country_id: activeCountry.id,
+        owner_name: name,
+        social: social || null,
+        fallback_base_price: activeCountry.base
+      })
+    });
+    const data = await res.json();
+    if(!res.ok || !data.checkout_url){
+      console.error(data);
+      showToast(lang==='tr' ? 'Ödeme sayfası oluşturulamadı, tekrar dene' : 'Could not create checkout, try again');
+      if(btn) btn.disabled = false;
+      return;
+    }
+    window.location.href = data.checkout_url; // gerçek ödeme sayfasına yönlendir
+  } catch(err){
+    console.error(err);
+    showToast(lang==='tr' ? 'Bağlantı hatası, tekrar dene' : 'Connection error, try again');
+    if(btn) btn.disabled = false;
+  }
 }
 
 function showToast(msg){
@@ -945,3 +963,4 @@ setInterval(()=>{
 </script>
 </body>
 </html>
+ 
