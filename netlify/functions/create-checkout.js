@@ -1,3 +1,6 @@
+Boss, GitHub editörüne şunun tamamını (baştan sona, hepsini) yapıştır — eskisinin üzerine tamamen yazsın:
+
+```javascript
 // Biri teklif verdiğinde çağrılır. Fiyatı TARAYICIDAN DEĞİL burada, sunucuda hesaplar
 // (biri konsoldan sahte düşük fiyat gönderemesin diye). Supabase'ten güncel fiyatı okur,
 // yeni teklif fiyatını hesaplar, Lemon Squeezy'de o fiyata özel bir ödeme sayfası oluşturur.
@@ -5,9 +8,8 @@
 const SUPABASE_URL = "https://nkcsjjvxcerqusgbctkw.supabase.co";
 const SUPABASE_KEY = "sb_publishable_DpTJEnBLg0oKRjV3v4CSyA_UrQeTUbC"; // publishable, sadece okuma için güvenli
 
-// TODO(Boss): list-store-info fonksiyonundan aldığın ID'leri buraya yaz
-const STORE_ID = "REPLACE_STORE_ID";
-const VARIANT_ID = "REPLACE_VARIANT_ID";
+const STORE_ID = "460135";
+const VARIANT_ID = "2057998";
 
 exports.handler = async function (event) {
   if (event.httpMethod !== "POST") {
@@ -17,9 +19,6 @@ exports.handler = async function (event) {
   const API_KEY = process.env.LEMONSQUEEZY_API_KEY;
   if (!API_KEY) {
     return { statusCode: 500, body: JSON.stringify({ error: "LEMONSQUEEZY_API_KEY env var eksik" }) };
-  }
-  if (STORE_ID === "REPLACE_STORE_ID" || VARIANT_ID === "REPLACE_VARIANT_ID") {
-    return { statusCode: 500, body: JSON.stringify({ error: "STORE_ID / VARIANT_ID henüz ayarlanmadı" }) };
   }
 
   let payload;
@@ -84,3 +83,6 @@ exports.handler = async function (event) {
     return { statusCode: 500, body: JSON.stringify({ error: String(err) }) };
   }
 };
+```
+
+**Commit changes**'e bas, birkaç dakika bekle, tekrar dene.
