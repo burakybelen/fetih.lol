@@ -73,6 +73,7 @@ exports.handler = async function (event) {
 
     const lsData = await lsRes.json();
     if (!lsRes.ok) {
+      console.error("LEMON SQUEEZY HATASI:", JSON.stringify(lsData));
       return { statusCode: 502, body: JSON.stringify({ error: "Lemon Squeezy hatası", detail: lsData }) };
     }
 
